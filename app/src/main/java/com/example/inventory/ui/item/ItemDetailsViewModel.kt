@@ -20,12 +20,14 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.ItemsRepository
+import com.example.inventory.data.withUpdatedDate
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import java.time.LocalDateTime
 
 /**
  * ViewModel to retrieve, update and delete an item from the [ItemsRepository]'s data source.
@@ -55,9 +57,10 @@ class ItemDetailsViewModel(
     /**
      * Reduces the item quantity by one and update the [ItemsRepository]'s data source.
      */
+
     fun reduceQuantityByOne() {
         viewModelScope.launch {
-            val currentItem = uiState.value.itemDetails.toItem()
+            val currentItem = uiState.value.itemDetails.toItem().withUpdatedDate()
             if (currentItem.quantity > 0) {
                 itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
             }

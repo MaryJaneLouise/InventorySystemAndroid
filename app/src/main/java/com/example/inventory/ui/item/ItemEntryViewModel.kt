@@ -22,7 +22,12 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.inventory.data.Item
 import com.example.inventory.data.ItemsRepository
+import java.sql.Time
 import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.util.Date
+import java.util.Locale
 
 /**
  * View Model to validate and insert items in the Room database.
@@ -73,6 +78,8 @@ data class ItemDetails(
     val name: String = "",
     val price: String = "",
     val quantity: String = "",
+    val date_added: Date = Date(),
+    val date_updated: Date = Date()
 )
 
 /**
@@ -84,11 +91,17 @@ fun ItemDetails.toItem(): Item = Item(
     id = id,
     name = name,
     price = price.toDoubleOrNull() ?: 0.0,
-    quantity = quantity.toIntOrNull() ?: 0
+    quantity = quantity.toIntOrNull() ?: 0,
+    date_added = date_added,
+    date_updated = date_updated
 )
 
 fun Item.formatedPrice(): String {
     return NumberFormat.getCurrencyInstance().format(price)
+}
+
+fun Item.formatedQuantity() : String {
+    return NumberFormat.getNumberInstance().format(quantity)
 }
 
 
@@ -108,5 +121,7 @@ fun Item.toItemDetails(): ItemDetails = ItemDetails(
     id = id,
     name = name,
     price = price.toString(),
-    quantity = quantity.toString()
+    quantity = quantity.toString(),
+    date_added = date_added,
+    date_updated = date_updated
 )

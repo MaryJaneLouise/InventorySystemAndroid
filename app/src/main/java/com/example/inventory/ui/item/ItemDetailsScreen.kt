@@ -49,6 +49,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
@@ -58,6 +59,11 @@ import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import kotlinx.coroutines.launch
+import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Date
+import java.util.Locale
 
 object ItemDetailsDestination : NavigationDestination {
     override val route = "item_details"
@@ -157,6 +163,14 @@ private fun ItemDetailsBody(
     }
 }
 
+fun Long.toLocalDateTime(): Date {
+    return Date(this)
+}
+
+fun Date.toFormattedDateString(): String {
+    val dateFormatter = SimpleDateFormat("MM/dd/yyyy HH:mm", Locale.US)
+    return dateFormatter.format(this)
+}
 
 @Composable
 fun ItemDetails(
@@ -175,7 +189,7 @@ fun ItemDetails(
             verticalArrangement = Arrangement.spacedBy(dimensionResource(id = R.dimen.padding_medium))
         ) {
             ItemDetailsRow(
-                labelResID = R.string.item,
+                labelResID = R.string.item_name,
                 itemDetail = item.name,
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                     .padding_medium))
@@ -192,8 +206,28 @@ fun ItemDetails(
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                     .padding_medium))
             )
+            if (item.date_added.toFormattedDateString() == item.date_updated.toFormattedDateString()) {
+                ItemDetailsRow(
+                    labelResID =  R.string.date_added,
+                    itemDetail = item.date_added.toFormattedDateString(),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                        .padding_medium))
+                )
+            } else {
+                ItemDetailsRow(
+                    labelResID =  R.string.date_added,
+                    itemDetail = item.date_added.toFormattedDateString(),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                        .padding_medium))
+                )
+                ItemDetailsRow(
+                    labelResID =  R.string.date_updated,
+                    itemDetail = item.date_updated.toFormattedDateString(),
+                    modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
+                        .padding_medium))
+                )
+            }
         }
-
     }
 }
 
@@ -201,12 +235,20 @@ fun ItemDetails(
 private fun ItemDetailsRow(
     @StringRes labelResID: Int, itemDetail: String, modifier: Modifier = Modifier
 ) {
-    Row(modifier = modifier) {
-        Text(text = stringResource(labelResID))
-        Spacer(modifier = Modifier.weight(1f))
-        Text(text = itemDetail, fontWeight = FontWeight.Bold)
+    Column(modifier = modifier.fillMaxWidth()) {
+        Text(
+            text = stringResource(labelResID),
+            fontWeight = FontWeight.Bold,
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.padding(bottom = dimensionResource(id = R.dimen.padding_small))
+        )
+        Text(
+            text = itemDetail,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
 }
+
 
 @Composable
 private fun DeleteConfirmationDialog(
@@ -226,6 +268,12 @@ private fun DeleteConfirmationDialog(
                 Text(text = stringResource(R.string.yes))
             }
         })
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ShowDeleteScreenPreview() {
+    DeleteConfirmationDialog(onDeleteConfirm = { /*TODO*/ }, onDeleteCancel = { /*TODO*/ })
 }
 
 @Preview(showBackground = true)

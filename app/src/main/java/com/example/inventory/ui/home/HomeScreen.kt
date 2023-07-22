@@ -18,13 +18,17 @@ package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
@@ -54,8 +58,10 @@ import com.example.inventory.R
 import com.example.inventory.data.Item
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.item.formatedPrice
+import com.example.inventory.ui.item.formatedQuantity
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import java.util.Date
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -101,6 +107,7 @@ fun HomeScreen(
         HomeBody(
             itemList = homeUiState.itemList,
             onItemClick = navigateToItemUpdate,
+
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -117,11 +124,20 @@ private fun HomeBody(
         modifier = modifier
     ) {
         if (itemList.isEmpty()) {
-            Text(
-                text = stringResource(R.string.no_item_description),
-                textAlign = TextAlign.Center,
-                style = MaterialTheme.typography.titleLarge
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentWidth()
+                    .wrapContentHeight()
+                    .align(Alignment.CenterHorizontally)
+            ) {
+                Text(
+                    text = stringResource(R.string.no_item_description),
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.titleLarge
+                )
+            }
+
         } else {
             InventoryList(
                 itemList = itemList,
@@ -183,7 +199,9 @@ private fun InventoryItem(
 fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(listOf(
-            Item(1, "Game", 100.0, 20), Item(2, "Pen", 200.0, 30), Item(3, "TV", 300.0, 50)
+            Item(1, "Game", 100.0, 200, Date(), Date()),
+            Item(2, "Pen", 200.0, 3000, Date(), Date()),
+            Item(3, "TV", 300.0, 50, Date(), Date())
         ), onItemClick = {})
     }
 }
@@ -201,7 +219,7 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20),
+            Item(1, "Game", 100.0, 20, Date(), Date()),
         )
     }
 }
