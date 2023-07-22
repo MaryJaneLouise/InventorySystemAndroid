@@ -37,10 +37,13 @@
     <string name="quantity_in_stock">Quantity in stock</string>
     <string name="date_added">Date Added</string>
     <string name="date_updated">Date Updated</string>
-    <string name="in_stock">%d in stock</string>
+    <string name="in_stock">%1$s stocks available</string>
+    <string name="one_stock">%1$s stock available</string>
+    <string name="out_stock">No stocks available</string>
     <string name="quantity_req">Quantity in Stock*</string>
     <string name="save_action">Save</string>
-    <string name="sell">Sell</string>
+    <string name="sell">Sell stocks</string>
+    <string name="add_stocks">Add stocks</string>
     <string name="yes">Yes</string>
     <string name="required_fields">*required fields</string>
 </resources>

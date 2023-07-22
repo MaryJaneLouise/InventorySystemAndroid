@@ -61,6 +61,8 @@ import com.example.inventory.ui.item.formatedPrice
 import com.example.inventory.ui.item.formatedQuantity
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
+import java.text.DecimalFormat
+import java.text.NumberFormat
 import java.util.Date
 
 object HomeDestination : NavigationDestination {
@@ -166,6 +168,11 @@ private fun InventoryList(
 private fun InventoryItem(
     item: Item, modifier: Modifier = Modifier
 ) {
+    fun formatNumberWithThousandsSeparator(number: Int): String {
+        val numberFormat: NumberFormat = DecimalFormat("#,###")
+        return numberFormat.format(number)
+    }
+    val quantityFormatted = formatNumberWithThousandsSeparator(item.quantity)
     Card(
         modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
@@ -186,10 +193,25 @@ private fun InventoryItem(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-            Text(
-                text = stringResource(R.string.in_stock, item.quantity),
-                style = MaterialTheme.typography.titleMedium
-            )
+            if (item.quantity > 0) {
+                if (item.quantity == 1) {
+                    Text(
+                        text = stringResource(R.string.one_stock, item.quantity),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                } else {
+                    Text(
+                        text = stringResource(R.string.in_stock, quantityFormatted),
+                        style = MaterialTheme.typography.titleMedium
+                    )
+                }
+            } else {
+                Text(
+                    text = stringResource(R.string.out_stock, item.quantity),
+                    style = MaterialTheme.typography.titleMedium
+                )
+            }
+
         }
     }
 }
@@ -200,8 +222,9 @@ fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(listOf(
             Item(1, "Game", 100.0, 200, Date(), Date()),
-            Item(2, "Pen", 200.0, 3000, Date(), Date()),
-            Item(3, "TV", 300.0, 50, Date(), Date())
+            Item(2, "Pen", 200.0, 30000, Date(), Date()),
+            Item(3, "TV", 300.0, 0, Date(), Date()),
+            Item(4, "People", 300.0, 1, Date(), Date())
         ), onItemClick = {})
     }
 }

@@ -50,7 +50,7 @@ class ItemDetailsViewModel(
                 ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
             }.stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                started = SharingStarted.Eagerly,
                 initialValue = ItemDetailsUiState()
             )
 
@@ -64,6 +64,17 @@ class ItemDetailsViewModel(
             if (currentItem.quantity > 0) {
                 itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity - 1))
             }
+        }
+    }
+
+    /**
+     * Adds the item quantity by one and update the [ItemsRepository]'s data source.
+     */
+
+    fun addQuantityByOne() {
+        viewModelScope.launch {
+            val currentItem = uiState.value.itemDetails.toItem().withUpdatedDate()
+            itemsRepository.updateItem(currentItem.copy(quantity = currentItem.quantity + 1))
         }
     }
 
