@@ -49,6 +49,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.dimensionResource
@@ -56,6 +57,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
@@ -102,10 +104,20 @@ fun ItemDetailsScreen(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large))
 
         ) {
-            Icon(
-                imageVector = Icons.Default.Edit,
-                contentDescription = stringResource(R.string.edit_item_title),
-            )
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_medium)))
+                Icon(
+
+                    imageVector = Icons.Default.Edit,
+                    contentDescription = stringResource(R.string.edit_item_title),
+                )
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_small)))
+                Text(text = stringResource(R.string.edit_item_title), fontSize = 16.sp)
+                Spacer(modifier = Modifier.width(dimensionResource(R.dimen.padding_medium)))
+            }
         }
     }, modifier = modifier
     ) { innerPadding ->
@@ -194,7 +206,7 @@ private fun ItemDetailsBody(
             }
         }
         CustomButton(
-            onClick = { /* handle click event */ },
+            onClick = { deleteConfirmationRequired = true },
             text = "Delete item"
         )
 
