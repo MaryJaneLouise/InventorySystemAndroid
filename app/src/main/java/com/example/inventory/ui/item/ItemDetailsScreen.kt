@@ -79,7 +79,6 @@ object ItemDetailsDestination : NavigationDestination {
     override val titleRes = R.string.item_detail_title
     const val itemIdArg = "itemId"
     val routeWithArgs = "$route/{$itemIdArg}"
-    val CustomRedColor = Color(0x9e2e4b)
 }
 
 @Composable
@@ -149,8 +148,8 @@ fun CustomButton(
     text: String
 ) {
     val customButtonColors = ButtonDefaults.textButtonColors(
-        containerColor = Color(158,46,60),
-        contentColor = Color.White
+        containerColor = MaterialTheme.colorScheme.error,
+        contentColor = MaterialTheme.colorScheme.onError
     )
 
     Button(

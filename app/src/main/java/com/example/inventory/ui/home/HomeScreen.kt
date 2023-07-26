@@ -82,7 +82,7 @@ fun HomeScreen(
     navigateToItemEntry: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
 ) {
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -100,7 +100,7 @@ fun HomeScreen(
             FloatingActionButton(
                 onClick = navigateToItemEntry,
                 shape = MaterialTheme.shapes.medium,
-                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large))
+                modifier = Modifier.padding(dimensionResource(R.dimen.padding_large)),
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -131,7 +131,7 @@ fun HomeScreen(
 
 @Composable
 private fun HomeBody(
-    itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>, onItemClick: (Int) -> Unit, modifier: Modifier = Modifier,
 ) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -164,29 +164,35 @@ private fun HomeBody(
 
 @Composable
 private fun InventoryList(
-    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier
+    itemList: List<Item>, onItemClick: (Item) -> Unit, modifier: Modifier = Modifier,
 ) {
     LazyColumn(modifier = modifier) {
         items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+            InventoryItem(
+                item = item,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                onClick = { onItemClick(item) },
+            )
         }
     }
 }
 
 @Composable
 private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier
+    item: Item,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     fun formatNumberWithThousandsSeparator(number: Int): String {
         val numberFormat: NumberFormat = DecimalFormat("#,###")
         return numberFormat.format(number)
     }
+
     val quantityFormatted = formatNumberWithThousandsSeparator(item.quantity)
     Card(
-        modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick,
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -255,6 +261,7 @@ fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
             Item(1, "Game", 100.0, 20, Date(), Date()),
+            onClick = {},
         )
     }
 }
