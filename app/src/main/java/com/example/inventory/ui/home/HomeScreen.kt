@@ -121,7 +121,6 @@ fun HomeScreen(
         HomeBody(
             itemList = homeUiState.itemList,
             onItemClick = navigateToItemUpdate,
-
             modifier = modifier
                 .padding(innerPadding)
                 .fillMaxSize()
@@ -168,17 +167,20 @@ private fun InventoryList(
 ) {
     LazyColumn(modifier = modifier) {
         items(items = itemList, key = { it.id }) { item ->
-            InventoryItem(item = item,
-                modifier = Modifier
-                    .padding(dimensionResource(id = R.dimen.padding_small))
-                    .clickable { onItemClick(item) })
+            InventoryItem(
+                item = item,
+                modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_small)),
+                onClick = { onItemClick(item) }
+            )
         }
     }
 }
 
 @Composable
 private fun InventoryItem(
-    item: Item, modifier: Modifier = Modifier
+    item: Item,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     fun formatNumberWithThousandsSeparator(number: Int): String {
         val numberFormat: NumberFormat = DecimalFormat("#,###")
@@ -186,7 +188,9 @@ private fun InventoryItem(
     }
     val quantityFormatted = formatNumberWithThousandsSeparator(item.quantity)
     Card(
-        modifier = modifier, elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        modifier = modifier,
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        onClick = onClick
     ) {
         Column(
             modifier = Modifier.padding(dimensionResource(id = R.dimen.padding_large)),
@@ -255,6 +259,7 @@ fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
             Item(1, "Game", 100.0, 20, Date(), Date()),
+            onClick = {}
         )
     }
 }

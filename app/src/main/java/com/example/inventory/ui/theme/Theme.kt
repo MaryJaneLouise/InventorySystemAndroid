@@ -100,7 +100,7 @@ fun InventoryTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     // Dynamic color is available on Android 12+
     // Dynamic color in this app is turned off for learning purposes
-    dynamicColor: Boolean = false,
+    dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
@@ -116,12 +116,11 @@ fun InventoryTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            if(darkTheme) {
-                window.statusBarColor = Color.Black.toArgb()
-            } else {
-                window.statusBarColor = Color.White.toArgb()
-            }
+            window.statusBarColor = colorScheme.surface.toArgb()
+            window.navigationBarColor = colorScheme.surface.toArgb()
+
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = !darkTheme
+            WindowCompat.getInsetsController(window, view).isAppearanceLightNavigationBars = !darkTheme
         }
     }
 

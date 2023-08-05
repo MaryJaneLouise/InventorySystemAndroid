@@ -32,14 +32,15 @@ import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.IOException
+import java.util.Date
 
 @RunWith(AndroidJUnit4::class)
 class ItemDaoTest {
 
     private lateinit var itemDao: ItemDao
     private lateinit var inventoryDatabase: InventoryDatabase
-    private val item1 = Item(1, "Apples", 10.0, 20)
-    private val item2 = Item(2, "Bananas", 15.0, 97)
+    private val item1 = Item(1, "Apples", 10.0, 20, Date(), Date())
+    private val item2 = Item(2, "Bananas", 15.0, 97, Date(), Date())
 
     @Before
     fun createDb() {
@@ -99,12 +100,12 @@ class ItemDaoTest {
     @Throws(Exception::class)
     fun daoUpdateItems_updatesItemsInDB() = runBlocking {
         addTwoItemsToDb()
-        itemDao.update(Item(1, "Apples", 15.0, 25))
-        itemDao.update(Item(2, "Bananas", 5.0, 50))
+        itemDao.update(Item(1, "Apples", 15.0, 25, Date(), Date()))
+        itemDao.update(Item(2, "Bananas", 5.0, 50, Date(), Date()))
 
         val allItems = itemDao.getAllItems().first()
-        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25))
-        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50))
+        assertEquals(allItems[0], Item(1, "Apples", 15.0, 25, Date(), Date()))
+        assertEquals(allItems[1], Item(2, "Bananas", 5.0, 50, Date(), Date()))
     }
 
     private suspend fun addOneItemToDb() {
