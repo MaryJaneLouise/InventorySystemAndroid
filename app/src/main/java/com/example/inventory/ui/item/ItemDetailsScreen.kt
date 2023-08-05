@@ -241,8 +241,8 @@ fun ItemDetails(
     val quantityFormatted = formatNumberWithThousandsSeparator(item.quantity)
     Card(
         modifier = modifier, colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.primary,
+            contentColor = MaterialTheme.colorScheme.primaryContainer
         )
     ) {
         Column(
