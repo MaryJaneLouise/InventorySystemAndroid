@@ -17,14 +17,12 @@
 package com.example.inventory.ui.home
 
 import android.annotation.SuppressLint
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.scrollable
+import android.icu.text.SimpleDateFormat
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -42,15 +40,20 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -59,14 +62,16 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.inventory.InventoryTopAppBar
 import com.example.inventory.R
 import com.example.inventory.data.Item
+import com.example.inventory.data.ItemDao
 import com.example.inventory.ui.AppViewModelProvider
 import com.example.inventory.ui.item.formatedPrice
-import com.example.inventory.ui.item.formatedQuantity
+import com.example.inventory.ui.item.toFormattedDateString
 import com.example.inventory.ui.navigation.NavigationDestination
 import com.example.inventory.ui.theme.InventoryTheme
 import java.text.DecimalFormat
 import java.text.NumberFormat
 import java.util.Date
+import java.util.Locale
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -76,16 +81,47 @@ object HomeDestination : NavigationDestination {
 /**
  * Entry route for Home screen
  */
+
+
+@Composable
+fun SearchView(
+    modifier: Modifier = Modifier,
+    state: MutableState<TextFieldValue>,
+    placeHolder: String
+) {
+    TextField(
+        value = state.value,
+        onValueChange = { value ->
+            state.value = value
+        },
+        placeholder = { Text(text = placeHolder) },
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(dimensionResource(R.dimen.padding_large))
+    )
+}
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun HomeScreen(
     navigateToItemEntry: () -> Unit,
     navigateToItemUpdate: (Int) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: HomeViewModel = viewModel(factory = AppViewModelProvider.Factory),
+    //itemViewModel: ItemViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val currentMonth = SimpleDateFormat("MMM", Locale.getDefault()).format(Date())
+    val currentYear = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date())
+
     val homeUiState by viewModel.homeUiState.collectAsState()
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+    val textState = remember { mutableStateOf(TextFieldValue("")) }
+
+    val searchedText = textState.value.text
+
+    val totalPriceForCurrentMonth = viewModel.totalPriceForCurrentMonth.collectAsState().value
+    val totalPriceForCurrentYear = viewModel.totalPriceForCurrentYear.collectAsState().value
 
     Scaffold(
         modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -118,13 +154,49 @@ fun HomeScreen(
             }
         },
     ) { innerPadding ->
-        HomeBody(
-            itemList = homeUiState.itemList,
-            onItemClick = navigateToItemUpdate,
-            modifier = modifier
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-        )
+                .fillMaxWidth()
+        ) {
+            SearchView(state = textState, placeHolder = "Search items here")
+            Text(text = "Total price for $currentMonth $currentYear: ${NumberFormat.getCurrencyInstance().format(totalPriceForCurrentMonth)}")
+            Text(text = "Total price for year $currentYear: ${NumberFormat.getCurrencyInstance().format(totalPriceForCurrentYear)}")
+
+            if (homeUiState.itemList.isEmpty()) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .wrapContentWidth()
+                        .wrapContentHeight()
+                        .align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        text = stringResource(R.string.no_item_description),
+                        textAlign = TextAlign.Center,
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            } else {
+                LazyColumn() {
+                    items(items =
+                    homeUiState.itemList.filter {
+                        it.name.contains(searchedText, ignoreCase = true) ||
+                        it.formatedPrice().contains(searchedText, ignoreCase = true) ||
+                        it.date_expire.toFormattedDateString().contains(searchedText, ignoreCase = true)
+                    }, key =
+                    { it.id }) { item ->
+                        InventoryItem(
+                            item = item,
+                            onClick = { navigateToItemUpdate(item.id) },
+                            modifier = Modifier.padding(dimensionResource(R.dimen.padding_medium))
+                        )
+
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -155,7 +227,9 @@ private fun HomeBody(
             InventoryList(
                 itemList = itemList,
                 onItemClick = { onItemClick(it.id) },
-                modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen.padding_small))
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = dimensionResource(id = R.dimen.padding_large))
             )
         }
     }
@@ -187,6 +261,7 @@ private fun InventoryItem(
         return numberFormat.format(number)
     }
     val quantityFormatted = formatNumberWithThousandsSeparator(item.quantity)
+
     Card(
         modifier = modifier,
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
@@ -227,7 +302,10 @@ private fun InventoryItem(
                     style = MaterialTheme.typography.titleMedium
                 )
             }
-
+            Text(
+                text = item.date_expire.toFormattedDateString(),
+                style = MaterialTheme.typography.titleMedium
+            )
         }
     }
 }
@@ -237,10 +315,10 @@ private fun InventoryItem(
 fun HomeBodyPreview() {
     InventoryTheme {
         HomeBody(listOf(
-            Item(1, "Game", 100.0, 200, Date(), Date()),
-            Item(2, "Pen", 200.0, 30000, Date(), Date()),
-            Item(3, "TV", 300.0, 0, Date(), Date()),
-            Item(4, "People", 300.0, 1, Date(), Date())
+            Item(1, "Game", 100.0, 200, Date(), Date(), Date()),
+            Item(2, "Pen", 200.0, 30000, Date(), Date(), Date()),
+            Item(3, "TV", 300.0, 0, Date(), Date(), Date()),
+            Item(4, "People", 300.0, 1, Date(), Date(), Date())
         ), onItemClick = {})
     }
 }
@@ -258,8 +336,13 @@ fun HomeBodyEmptyListPreview() {
 fun InventoryItemPreview() {
     InventoryTheme {
         InventoryItem(
-            Item(1, "Game", 100.0, 20, Date(), Date()),
+            Item(1, "Game", 100.0, 20, Date(), Date(), Date()),
             onClick = {}
         )
     }
 }
+
+
+
+
+

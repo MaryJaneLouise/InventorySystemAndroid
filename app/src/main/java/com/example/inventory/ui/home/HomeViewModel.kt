@@ -16,14 +16,23 @@
 
 package com.example.inventory.ui.home
 
+import android.icu.text.SimpleDateFormat
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.inventory.data.Item
+import com.example.inventory.data.ItemDao
 import com.example.inventory.data.ItemsRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 /**
  * View Model to retrieve all items in the Room database.
@@ -38,13 +47,30 @@ class HomeViewModel(itemsRepository: ItemsRepository) : ViewModel() {
         itemsRepository.getAllItemsStream().map { HomeUiState(it) }
             .stateIn(
                 scope = viewModelScope,
-                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
+                started = SharingStarted.Eagerly,
                 initialValue = HomeUiState()
             )
 
     companion object {
         private const val TIMEOUT_MILLIS = 5_000L
     }
+
+    val searchQuery = mutableStateOf("")
+
+    fun onSearchQueryChanged(newQuery: String) {
+        searchQuery.value = newQuery
+    }
+
+    val totalPriceForCurrentMonth: StateFlow<Double?> = flow {
+        val currentMonth = String.format("%02d", Calendar.getInstance().get(Calendar.MONTH) + 1)
+        val currentYear = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date())
+        emitAll(itemsRepository.getTotalPriceForMonth(currentMonth, currentYear))
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
+
+    val totalPriceForCurrentYear: StateFlow<Double?> = flow {
+        val currentYear = SimpleDateFormat("yyyy", Locale.getDefault()).format(Date())
+        emitAll(itemsRepository.getTotalPriceForYear(currentYear))
+    }.stateIn(viewModelScope, SharingStarted.Eagerly, 0.0)
 }
 
 /**

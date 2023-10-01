@@ -36,6 +36,12 @@ interface ItemDao {
     @Query("SELECT * from items WHERE id = :id")
     fun getItem(id: Int): Flow<Item>
 
+    @Query("SELECT IFNULL(SUM(price), 0) from items WHERE strftime('%m', datetime(date_added / 1000, 'unixepoch')) = :month AND strftime('%Y', datetime(date_added / 1000, 'unixepoch')) = :year")
+    fun getTotalPriceForMonth(month: String, year: String): Flow<Double>
+
+    @Query("SELECT IFNULL(SUM(price), 0) from items WHERE strftime('%Y', datetime(date_added / 1000, 'unixepoch')) = :year")
+    fun getTotalPriceForYear(year: String): Flow<Double>
+
     // Specify the conflict strategy as IGNORE, when the user tries to add an
     // existing Item into the database Room ignores the conflict.
     @Insert(onConflict = OnConflictStrategy.IGNORE)

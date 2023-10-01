@@ -32,6 +32,10 @@ interface ItemsRepository {
      */
     fun getItemStream(id: Int): Flow<Item?>
 
+    fun getTotalPriceForMonth(month: String, year: String): Flow<Double?>
+
+    fun getTotalPriceForYear(year: String): Flow<Double?>
+
     /**
      * Insert item in the data source
      */

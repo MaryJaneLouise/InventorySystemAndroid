@@ -79,7 +79,8 @@ data class ItemDetails(
     val price: String = "",
     val quantity: String = "",
     val date_added: Date = Date(),
-    val date_updated: Date = Date()
+    val date_updated: Date = Date(),
+    val date_expire: Date = Date()
 )
 
 /**
@@ -93,7 +94,8 @@ fun ItemDetails.toItem(): Item = Item(
     price = price.toDoubleOrNull() ?: 0.0,
     quantity = quantity.toIntOrNull() ?: 0,
     date_added = date_added,
-    date_updated = date_updated
+    date_updated = date_updated,
+    date_expire = date_expire
 )
 
 fun Item.formatedPrice(): String {
@@ -123,5 +125,6 @@ fun Item.toItemDetails(): ItemDetails = ItemDetails(
     price = price.toString(),
     quantity = quantity.toString(),
     date_added = date_added,
-    date_updated = date_updated
+    date_updated = date_updated,
+    date_expire = date_expire
 )

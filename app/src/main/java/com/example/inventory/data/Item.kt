@@ -32,7 +32,8 @@ data class Item(
     val price: Double,
     val quantity: Int,
     val date_added: Date,
-    val date_updated: Date
+    val date_updated: Date,
+    val date_expire: Date
 )
 
 fun Item.withUpdatedDate(): Item {

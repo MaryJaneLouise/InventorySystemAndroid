@@ -29,19 +29,20 @@
     <string name="item_name">Product name</string>
     <string name="item_detail_title">Product Details</string>
     <string name="item_entry_title">Add product</string>
-    <string name="item_name_req">Product name*</string>
-    <string name="item_price_req">Product price*</string>
+    <string name="item_name_req">Product name *</string>
+    <string name="item_price_req">Product price *</string>
     <string name="no">No</string>
 
     <string name="price">Product price</string>
     <string name="quantity_in_stock">Product stock quantity</string>
     <string name="date_added">Date added</string>
     <string name="date_updated">Date updated</string>
+    <string name="date_acquired">Date acquired</string>
     <string name="in_stock">%1$s stocks available</string>
     <string name="one_stock">%1$s stock available</string>
     <string name="out_stock">No stocks available</string>
 
-    <string name="quantity_req">Stock quantity*</string>
+    <string name="quantity_req">Stock quantity *</string>
     <string name="save_action">Save</string>
     <string name="sell">Sell stocks</string>
     <string name="add_stocks">Add stocks</string>

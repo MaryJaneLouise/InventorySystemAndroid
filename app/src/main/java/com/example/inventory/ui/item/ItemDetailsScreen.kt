@@ -225,8 +225,13 @@ fun Long.toLocalDateTime(): Date {
     return Date(this)
 }
 
-fun Date.toFormattedDateString(): String {
+fun Date.toFormattedDateTimeString(): String {
     val dateFormatter = SimpleDateFormat("MM/dd/yyyy hh:mm:ss a", Locale.US)
+    return dateFormatter.format(this)
+}
+
+fun Date.toFormattedDateString(): String {
+    val dateFormatter = SimpleDateFormat("MM/dd/yyyy", Locale.US)
     return dateFormatter.format(this)
 }
 
@@ -288,23 +293,23 @@ fun ItemDetails(
                 modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                     .padding_medium))
             )
-            if (item.date_added.toFormattedDateString() == item.date_updated.toFormattedDateString()) {
+            if (item.date_added.toFormattedDateTimeString() == item.date_updated.toFormattedDateTimeString()) {
                 ItemDetailsRow(
                     labelResID =  R.string.date_added,
-                    itemDetail = item.date_added.toFormattedDateString(),
+                    itemDetail = item.date_added.toFormattedDateTimeString(),
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                         .padding_medium))
                 )
             } else {
                 ItemDetailsRow(
                     labelResID =  R.string.date_added,
-                    itemDetail = item.date_added.toFormattedDateString(),
+                    itemDetail = item.date_added.toFormattedDateTimeString(),
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                         .padding_medium))
                 )
                 ItemDetailsRow(
                     labelResID =  R.string.date_updated,
-                    itemDetail = item.date_updated.toFormattedDateString(),
+                    itemDetail = item.date_updated.toFormattedDateTimeString(),
                     modifier = Modifier.padding(horizontal = dimensionResource(id = R.dimen
                         .padding_medium))
                 )
@@ -334,7 +339,9 @@ private fun ItemDetailsRow(
 
 @Composable
 private fun DeleteConfirmationDialog(
-    onDeleteConfirm: () -> Unit, onDeleteCancel: () -> Unit, modifier: Modifier = Modifier
+    onDeleteConfirm: () -> Unit,
+    onDeleteCancel: () -> Unit,
+    modifier: Modifier = Modifier
 ) {
     AlertDialog(onDismissRequest = { /* Do nothing */ },
         title = { Text(stringResource(R.string.attention)) },
